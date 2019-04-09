@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/layout :: head"></head>
+<body>
+
+	<div class="limiter">
+		<nav class="navbar navbar-expand-md">
+			<div class="collapse navbar-collapse">
+				<ul class="navbar-nav navbar-right mx-4">
+					<li class="nav-item dropdown show mx-4">
+					<a
+						class="btn btn-outline-primary dropdown-toggle" href="#"
+						role="button" id="dropdownLenguaje" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false"> <span
+							sec:authentication="name" th:text="#{text.locale.language}"></span></a>
+							
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+							<a class="dropdown-item" th:href="@{/locale(lang=es_ES)}" th:text="#{text.locale.es}">ES</a>
+							<a class="dropdown-item" th:href="@{/locale(lang=en_US)}" th:text="#{text.locale.en}">EN</a>
+							<a class="dropdown-item" th:href="@{/locale(lang=de_DE)}" th:text="#{text.locale.de}">DE</a>
+							</div>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="container-login100">
+
+			<div class="wrap-login100 p-t-50 p-b-90">
+
+
+				<form class="login100-form validate-form flex-sb flex-w"
+					th:action="@{/login}" method="post">
+					<span class="login100-form-title p-b-51" th:text="#{text.login.titulo}"> INICIO SESIÓN </span>
+
+
+					<div class="wrap-input100 validate-input m-b-16"
+						data-validate="Usuario es requerido">
+						<input class="input100" type="text" name="username" id="username"
+							th:placeholder="#{text.login.username}" autofocus="autofocus" /> <span
+							class="focus-input100"></span>
+					</div>
+
+
+					<div class="wrap-input100 validate-input m-b-16"
+						data-validate="Contraseña es requerida">
+						<input class="input100" type="password" name="password"
+							id="password" th:placeholder="#{text.login.password}" /> <span
+							class="focus-input100"></span>
+					</div>
+
+					<div class="container-login100-form-btn m-t-17">
+						<input type="submit" class="login100-form-btn" th:value="#{text.login.boton}" />
+					</div>
+
+				</form>
+				<br>
+				<div class="alert alert-success" th:if="${success != null}"
+					th:text="${success}"></div>
+				<div class="alert alert-danger" th:if="${error != null}"
+					th:text="${error}"></div>
+				<div class="alert alert-warning" th:if="${warning != null}"
+					th:text="${warning}"></div>
+				<div class="alert alert-info" th:if="${info != null}"
+					th:text="${info}"></div>
+			</div>
+
+		</div>
+
+	</div>
+
+
+
+	<footer th:replace="layout/layout :: footer"></footer>
+
+</body>
+</html>
