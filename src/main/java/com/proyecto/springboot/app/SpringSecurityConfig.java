@@ -8,9 +8,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.proyecto.springboot.app.auth.filter.JWTAuthenticationFilter;
+import com.proyecto.springboot.app.auth.filter.JWTAuthorizationFilter;
 import com.proyecto.springboot.app.auth.handler.LoginSuccessHandler;
+import com.proyecto.springboot.app.auth.service.JWTService;
 import com.proyecto.springboot.app.models.service.JpaUserDetailsService;
 
 @EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled=true)
@@ -30,25 +34,28 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private JpaUserDetailsService userDetailsService;
 	
+	@Autowired
+	private JWTService jwtService;
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/","/css/**","/js/**","/images/**","/listar","/login/**","/locale","/listar-rest-api","/api/clientes/**").permitAll()
-//		.antMatchers("/ver/**").hasAnyRole("USER")
-//		.antMatchers("/uploads/**").hasAnyRole("USER")
-//		.antMatchers("/form/**").hasAnyRole("ADMIN")
-//		.antMatchers("/eliminar/**").hasAnyRole("ADMIN")
-//		.antMatchers("/factura/**").hasAnyRole("ADMIN")
+		http.authorizeRequests().antMatchers("/","/css/**","/js/**","/images/**","/listar","/login/**","/locale","/listar-rest-api").permitAll()
 		.anyRequest().authenticated()
-		.and()
-	    .formLogin()
-	    .successHandler(successHandler)
-	    .loginPage("/login")
-	    .permitAll()
+//		.and()
+//	    .formLogin()
+//	    .successHandler(successHandler)
+//	    .loginPage("/login")
+//	    .permitAll()
+//	    .and()
+//	    .logout().permitAll()
+//	    .and()
+//	    .exceptionHandling()
+//	    .accessDeniedPage("/error_403")
 	    .and()
-	    .logout().permitAll()
-	    .and()
-	    .exceptionHandling()
-	    .accessDeniedPage("/error_403");
+	    .addFilter(new JWTAuthenticationFilter(authenticationManager(),jwtService))
+	    .addFilter(new JWTAuthorizationFilter(authenticationManager(),jwtService))
+	    .csrf().disable()
+	    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
 	}
 
@@ -60,22 +67,5 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 		build.userDetailsService(userDetailsService)
 		.passwordEncoder(passwordEncoder);
 		
-		
-		
-		//Con jdbc autentication
-//		build.jdbcAuthentication().dataSource(dataSource)
-//		.passwordEncoder(passwordEncoder)
-//		.usersByUsernameQuery("select  username, password, enabled from users where username=?")
-//		.authoritiesByUsernameQuery("select u.username,a.authority from authorities a inner join users u on (a.user_id = u.id) where u.username=?");
-		
-		
-		
-		/*PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		UserBuilder users = User.builder().passwordEncoder(encoder::encode);
-		
-		
-		build.inMemoryAuthentication()
-		.withUser(users.username("admin").password("12345").roles("ADMIN","USER"))
-		.withUser(users.username("andres").password("12345").roles("USER"));*/
 	}
 }
